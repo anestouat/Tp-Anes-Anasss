@@ -18,6 +18,7 @@ public class HelloApplication extends Application {
         Scene scene = new Scene(v, 320, 240);
         System.out.println("messi");
         stage.setTitle("Hello!");
+        System.out.println();
         stage.setScene(scene);
         stage.show();
     }
