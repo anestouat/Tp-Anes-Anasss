@@ -14,6 +14,7 @@ public class HelloApplication extends Application {
     public void start(Stage stage) throws IOException {
         HBox h = new HBox();
        VBox v = new VBox();
+       HBox hh = new HBox();
         Scene scene = new Scene(v, 320, 240);
         stage.setTitle("Hello!");
         stage.setScene(scene);
