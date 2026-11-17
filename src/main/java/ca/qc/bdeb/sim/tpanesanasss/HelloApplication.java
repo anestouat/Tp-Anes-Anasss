@@ -16,6 +16,7 @@ public class HelloApplication extends Application {
        VBox v = new VBox();
        HBox hh = new HBox();
         Scene scene = new Scene(v, 320, 240);
+        System.out.println("messi");
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
