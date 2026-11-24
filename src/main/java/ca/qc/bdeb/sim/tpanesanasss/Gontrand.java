@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import java.util.ArrayList;
 
 public class Gontrand extends ObjetDuJeu {
     public static final int VIES_MAX = 4;
@@ -12,13 +13,16 @@ public class Gontrand extends ObjetDuJeu {
     private static final double VITESSE_MAX = 300;        // px/s
     private static final double DUREE_INVINCIBLE = 2;     // secondes
     private static final double DUREE_CLIGNOTEMENT = 0.25;
+    private static final double DELAI_ENTRE_TIRS = 0.5;
 
     private static final Image IMAGE_NORMALE = new Image("gontrand.png");
     private static final Image IMAGE_AVANCE = new Image("gontrand-avant.png");
     private static final Image IMAGE_OUTCH = new Image("gontrand-outch.png");
 
     private int vies = VIES_MAX;
-    private double tempsDepuisDernierCoup = DUREE_INVINCIBLE; // pas invincible au départ
+    private double tempsDepuisDernierCoup = DUREE_INVINCIBLE;
+    private double tempsDepuisDernierTir = DELAI_ENTRE_TIRS;
+    private TypeProjectile typeProjectile = TypeProjectile.ETOILE;
 
     public Gontrand() {
         super(Point2D.ZERO, new Point2D(LARGEUR, HAUTEUR), IMAGE_NORMALE);
@@ -27,7 +31,7 @@ public class Gontrand extends ObjetDuJeu {
 
     @Override
     public void update(double deltaTemps) {
-        // 1. Les flèches changent l'accélération (même méthode pour les 2 axes : pas de copier-coller)
+
         double ax = accelerationSurUnAxe(
                 Input.isKeyPressed(KeyCode.LEFT), Input.isKeyPressed(KeyCode.RIGHT),
                 velocite.getX(), deltaTemps);
@@ -36,16 +40,17 @@ public class Gontrand extends ObjetDuJeu {
                 velocite.getY(), deltaTemps);
         acceleration = new Point2D(ax, ay);
 
-        // 2. Physique normale (méthode de ObjetDuJeu)
+
         updatePhysique(deltaTemps);
 
-        // 3. Vitesse maximale de 300 px/s dans chaque direction
+
         velocite = new Point2D(
                 Math.clamp(velocite.getX(), -VITESSE_MAX, VITESSE_MAX),
                 Math.clamp(velocite.getY(), -VITESSE_MAX, VITESSE_MAX));
 
-        // 4. Les chronomètres avancent
+
         tempsDepuisDernierCoup += deltaTemps;
+        tempsDepuisDernierTir += deltaTemps;
 
         choisirImage();
     }
@@ -65,7 +70,7 @@ public class Gontrand extends ObjetDuJeu {
     private void choisirImage() {
         if (estInvincible()) {
             image = IMAGE_OUTCH;
-        } else if (velocite.magnitude() > 1) { // il bouge (on ignore les vitesses minuscules)
+        } else if (velocite.magnitude() > 1) {
             image = IMAGE_AVANCE;
         } else {
             image = IMAGE_NORMALE;
@@ -74,7 +79,7 @@ public class Gontrand extends ObjetDuJeu {
 
     @Override
     public void draw(GraphicsContext context, Camera camera) {
-        // Clignotement : 0.25s visible, 0.25s invisible, ...
+
         int numeroIntervalle = (int) (tempsDepuisDernierCoup / DUREE_CLIGNOTEMENT);
         boolean cache = estInvincible() && numeroIntervalle % 2 == 1;
 
@@ -86,7 +91,7 @@ public class Gontrand extends ObjetDuJeu {
         double x = Math.clamp(position.getX(), xMin, xMax - taille.getX());
         double y = Math.clamp(position.getY(), 0, MainJavaFx.HAUTEUR - taille.getY());
 
-        // S'il frappe un bord, sa vitesse dans cette direction tombe à 0
+
         double vx = (x == position.getX()) ? velocite.getX() : 0;
         double vy = (y == position.getY()) ? velocite.getY() : 0;
 
@@ -100,7 +105,7 @@ public class Gontrand extends ObjetDuJeu {
         acceleration = Point2D.ZERO;
     }
 
-    // ----- Vies -----
+
 
     public void perdreVie() {
         vies--;
@@ -117,5 +122,24 @@ public class Gontrand extends ObjetDuJeu {
 
     public int getVies() {
         return vies;
+    }
+
+
+    public boolean peutTirer() {
+        return tempsDepuisDernierTir >= DELAI_ENTRE_TIRS;
+    }
+
+
+    public ArrayList<Projectile> tirer() {
+        tempsDepuisDernierTir = 0;
+        return typeProjectile.creer(getCentre());
+    }
+
+    public TypeProjectile getTypeProjectile() {
+        return typeProjectile;
+    }
+
+    public void setTypeProjectile(TypeProjectile typeProjectile) {
+        this.typeProjectile = typeProjectile;
     }
 }

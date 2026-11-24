@@ -3,7 +3,7 @@ package ca.qc.bdeb.sim.tpanesanasss;
 import javafx.geometry.Point2D;
 
 public class Camera {
-    // Position de la caméra dans le niveau (bord gauche de ce qu'on voit)
+
     private double x = 0;
 
     public double getX() {
@@ -17,10 +17,10 @@ public class Camera {
     public void suivre(Gontrand gontrand) {
         double xVoulu = gontrand.getGauche() - MainJavaFx.LARGEUR / 5;
 
-        // Math.max : on garde la plus grande valeur, donc la caméra ne recule jamais
+
         x = Math.max(x, xVoulu);
 
-        // On ne montre jamais plus loin que la fin du niveau
+
         x = Math.clamp(x, 0,Partie.LARGEUR_NIVEAU - MainJavaFx.LARGEUR);
     }
 
