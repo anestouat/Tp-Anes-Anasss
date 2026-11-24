@@ -18,16 +18,12 @@ public class Hasard {
         return min + random.nextDouble() * (max - min);
     }
 
-    /**
-     * @return un entier au hasard entre min et max (les deux inclus)
-     */
+
     public static int entierEntre(int min, int max) {
         return random.nextInt(min, max + 1);
     }
 
-    /**
-     * @return +1 ou -1 au hasard
-     */
+
     public static int signe() {
         return random.nextBoolean() ? 1 : -1;
     }
